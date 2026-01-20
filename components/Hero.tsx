@@ -1,10 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { City } from "@/types/city";
 import { Restaurant } from "@/types/restaurant";
 import { Search, MapPin } from "lucide-react";
 import { API } from "@/api/config";
 import Restaurants from "./Restaurants";
+import { BasicFilters } from "@/types/filters";
+import { objectToQueryParams } from "@/utils/URLEncoder";
+import { SlidersHorizontal } from "lucide-react";
+import FiltersSideBar from "./FiltersSideBar";
+import { Filters } from "@/types/filters";
 
 const Hero = ({
   cities,
@@ -13,37 +18,59 @@ const Hero = ({
   cities: City[];
   restaurants: Restaurant[];
 }) => {
-  const [city, setCity] = useState(cities[0].city_name);
   const [refetch, setRefetch] = useState<Boolean>(false);
   const [listedRestaurants, setListedRestaurants] =
     useState<Restaurant[]>(restaurants);
 
-  const updateCity = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const [basicFilters, setBasicFilters] = useState<BasicFilters>({
+    city: cities[0].city_name,
+    name: "",
+  });
+
+  const [toggleSideBar, setToggleSideBar] = useState<Boolean>(false);
+
+  const updateBasicInputs = (
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
+  ) => {
     const { name, value } = e.target;
-    setCity((prevCity) => value);
+    setBasicFilters((prev) => {
+      return { ...prev, [name]: value };
+    });
     if (!refetch) {
       setRefetch(true);
     }
   };
 
-  const getRestaurantByCity = async () => {
+  const getRestaurants = async (additionalFilters: Filters = {}) => {
     try {
-      let { data } = await API.get<Restaurant[]>(`/restaurants/${city}`);
-      console.log(data);
+      const query = { ...basicFilters, ...additionalFilters };
+      console.log(objectToQueryParams(query));
+      const { data } = await API.get<Restaurant[]>(
+        `/restaurants?${objectToQueryParams(query)}`,
+      );
       setListedRestaurants(data);
     } catch (e) {}
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    getRestaurants();
+  };
+
   useEffect(() => {
     if (refetch) {
-      getRestaurantByCity();
+      getRestaurants();
     }
-  }, [refetch, city]);
+  }, [refetch, basicFilters.city]);
+
+  const applyFilters = (sidebarFilters: Filters) => {
+    getRestaurants(sidebarFilters);
+  };
 
   return (
-    <>
+    <div className="px-12">
       <div className="flex px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
-        <h1 className="text-[52px] font-inter uppercase font-bold">
+        <h1 className="text-[52px] font-poppins uppercase font-bold">
           Discover Your Next{" "}
           <span className="text-primary">Favorite Meal</span>{" "}
         </h1>
@@ -51,39 +78,57 @@ const Hero = ({
           Find the best restaurants near you with exclusive offers and deals.
           Easy search, easy find.
         </p>
-        <div className="m-auto p-4 w-full flex gap-4  bg-white rounded-lg">
+      </div>
+      <div className="m-auto items-center z-20 sticky top-0 p-4 w-full flex gap-4  bg-white rounded-lg">
+        <button
+          onClick={() => {
+            setToggleSideBar(!toggleSideBar);
+          }}
+          className="px-3 h-full py-3 cursor-pointer bg-primary text-background rounded-lg"
+        >
+          <SlidersHorizontal className="text-background" />
+        </button>
+
+        <div className="rounded-md px-6 gap-2 flex items-center text-foreground bg-background">
+          <MapPin />
+          <select
+            className="outline-none px-3 border-none py-4"
+            value={basicFilters.city}
+            onChange={updateBasicInputs}
+            name="city"
+          >
+            <option value="">Select City</option>
+            {cities.map((c, i) => {
+              return (
+                <option value={c.city_name} key={c.id}>
+                  {c.city_name}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-1 gap-4">
           <div className="rounded-md flex-1 px-6 gap-6 flex items-center text-foreground bg-background">
             <Search />
             <input
               type="text"
-              className="outline-none border-none py-4"
+              className="outline-none border-none py-4 flex-1"
               placeholder="Search by restaurant..."
+              name="name"
+              value={basicFilters.name}
+              onChange={updateBasicInputs}
             />
-          </div>
-          <div className="rounded-md px-6 gap-2 flex items-center text-foreground bg-background">
-            <MapPin />
-            <select
-              className="outline-none px-3 border-none py-4"
-              value={city}
-              onChange={updateCity}
-            >
-              <option value="">Select City</option>
-              {cities.map((c, i) => {
-                return (
-                  <option value={c.city_name} key={c.id}>
-                    {c.city_name}
-                  </option>
-                );
-              })}
-            </select>
           </div>
           <button className="px-6 cursor-pointer py-4 bg-primary rounded-md text-background">
             Search
           </button>
-        </div>
+        </form>
       </div>
-      <Restaurants restaurants={listedRestaurants} />
-    </>
+      <div className="flex transition-all duration-200 gap-6 relative py-6">
+        {toggleSideBar && <FiltersSideBar applyFilters={applyFilters} />}
+        <Restaurants restaurants={listedRestaurants} />
+      </div>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import { API, BASE_URL } from "@/api/config";
+import { API } from "@/api/config";
 import { Restaurant } from "@/types/restaurant";
 import { City } from "@/types/city";
 
@@ -23,7 +23,7 @@ export default async function Home() {
 
     return (
       <div className="bg-background w-full">
-        <div className="flex flex-col">
+        <div className="flex relative flex-col">
           <Navbar />
           <Hero cities={cities} restaurants={restaurants} />
         </div>

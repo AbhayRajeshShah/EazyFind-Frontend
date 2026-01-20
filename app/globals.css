@@ -1,4 +1,5 @@
 @import "tailwindcss";
+/* @import "antd/dist/reset.css"; */
 
 :root {
   --background: #fff6e5;
@@ -6,6 +7,7 @@
   --primary: #8b1e3f;
   --accent: #16a34a;
   --secondary: #d4af37;
+  --olive: #f2eed3;
   --headingSize: 56px;
   --subheadingSize: 26px;
   --bodySize: 16px;
@@ -17,6 +19,7 @@
   --color-primary: var(--primary);
   --color-accent: var(--accent);
   --color-secondary: var(--secondary);
+  --color-olive: var(--olive);
   --text-heading: var(--headingSize);
   --text-subheading: var(--subheadingSize);
   --text-body: var(--bodySize);

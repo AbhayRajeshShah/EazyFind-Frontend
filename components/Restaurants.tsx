@@ -3,8 +3,9 @@ import { Restaurant } from "@/types/restaurant";
 import { Star, Users } from "lucide-react";
 
 const Restaurants = ({ restaurants }: { restaurants: Restaurant[] }) => {
+  console.log(restaurants);
   return (
-    <div className="px-12 py-6">
+    <div className=" ">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {restaurants.map((restaurant) => (
           <RestaurantCard
@@ -19,14 +20,14 @@ const Restaurants = ({ restaurants }: { restaurants: Restaurant[] }) => {
 
 const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   return (
-    <div className="rounded-lg shadow-md flex flex-col font-poppins">
+    <div className="rounded-lg bg-olive shadow-md flex flex-col font-poppins">
       <img
         src={restaurant.image_url || "/placeholder-restaurant.png"}
         alt={restaurant.restaurant_name || "Restaurant Image"}
         className="w-full h-48 object-cover rounded-md mb-4"
       />
       <div className="p-4 flex  flex-1 flex-col justify-between">
-        <div className=" flex ">
+        <div className=" flex gap-1">
           <div className="flex flex-col flex-3">
             <h2 className="text-xl col-span-3 font-bold mb-2 font-inter">
               {restaurant.restaurant_name || "Unnamed Restaurant"}
