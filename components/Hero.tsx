@@ -10,13 +10,19 @@ import { objectToQueryParams } from "@/utils/URLEncoder";
 import { SlidersHorizontal } from "lucide-react";
 import FiltersSideBar from "./FiltersSideBar";
 import { Filters } from "@/types/filters";
+import { Cuisine } from "@/types/cuisine";
+import { MealType } from "@/types/mealType";
 
 const Hero = ({
   cities,
   restaurants,
+  mealTypes,
+  cuisines,
 }: {
   cities: City[];
   restaurants: Restaurant[];
+  mealTypes: MealType[];
+  cuisines: Cuisine[];
 }) => {
   const [refetch, setRefetch] = useState<Boolean>(false);
   const [listedRestaurants, setListedRestaurants] =
@@ -72,7 +78,7 @@ const Hero = ({
       <div className="flex px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
         <h1 className="text-[52px] font-poppins uppercase font-bold">
           Discover Your Next{" "}
-          <span className="text-primary">Favorite Meal</span>{" "}
+          <span className="text-primary">Favorite Meal.</span>
         </h1>
         <p className="font-inter text-[20px] text-gray-600 max-w-2xl">
           Find the best restaurants near you with exclusive offers and deals.
@@ -125,7 +131,13 @@ const Hero = ({
         </form>
       </div>
       <div className="flex transition-all duration-200 gap-6 relative py-6">
-        {toggleSideBar && <FiltersSideBar applyFilters={applyFilters} />}
+        {toggleSideBar && (
+          <FiltersSideBar
+            cuisines={cuisines}
+            mealTypes={mealTypes}
+            applyFilters={applyFilters}
+          />
+        )}
         <Restaurants restaurants={listedRestaurants} />
       </div>
     </div>

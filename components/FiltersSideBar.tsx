@@ -8,13 +8,19 @@ import {
   CheckboxChangeEvent,
 } from "antd";
 import { Filters } from "@/types/filters";
+import { MealType } from "../types/mealType";
+import { Cuisine } from "@/types/cuisine";
 
 const { Option } = Select;
 
 const FiltersSideBar = ({
   applyFilters,
+  mealTypes,
+  cuisines,
 }: {
   applyFilters: (sidebarFilters: Filters) => void;
+  mealTypes: MealType[];
+  cuisines: Cuisine[];
 }) => {
   const [filters, setFilters] = useState<Filters>({
     area: "",
@@ -40,11 +46,9 @@ const FiltersSideBar = ({
     });
   }, [cost]);
 
-  console.log(filters);
-
   return (
     <div
-      className="w-100 p-6 rounded-md h-[80svh] flex flex-col sticky top-28 shadow-md"
+      className="w-100 overflow-auto p-6 rounded-md h-[80svh] flex flex-col sticky top-28 shadow-md"
       style={{ backgroundColor: "#f2eed3" }}
     >
       <div className="">
@@ -78,7 +82,7 @@ const FiltersSideBar = ({
             </Form.Item>
 
             {/* Discount */}
-            <Form.Item label="Discount (%)" name="discount">
+            <Form.Item label="Minimum Discount (%)" name="discount">
               <Input
                 type="number"
                 min={0}
@@ -91,26 +95,50 @@ const FiltersSideBar = ({
             </Form.Item>
 
             {/* Cuisines */}
-            <Form.Item label="Cuisines" name="cuisines">
+            <Form.Item label="Cuisines" name="cuisineIds">
               <Select
                 mode="multiple"
                 placeholder="Select cuisines"
                 className="bg-transparent"
+                value={filters.cuisineIds || []}
+                maxCount={5}
+                onChange={(e: string[]) => {
+                  setFilters((f) => {
+                    return { ...f, cuisineIds: e };
+                  });
+                }}
               >
-                <Option value="indian">Indian</Option>
-                <Option value="chinese">Chinese</Option>
-                <Option value="italian">Italian</Option>
-                <Option value="mexican">Mexican</Option>
+                {cuisines.map((e) => {
+                  return (
+                    <Option value={e.id} key={e.id}>
+                      {e.cuisine_name}
+                    </Option>
+                  );
+                })}
               </Select>
             </Form.Item>
 
             {/* Meal Types */}
             <Form.Item label="Meal Types" name="mealTypes">
-              <Select mode="multiple" placeholder="Select meal types">
-                <Option value="breakfast">Breakfast</Option>
-                <Option value="lunch">Lunch</Option>
-                <Option value="dinner">Dinner</Option>
-                <Option value="snacks">Snacks</Option>
+              <Select
+                mode="multiple"
+                placeholder="Select Meal Type"
+                className="bg-transparent"
+                maxCount={5}
+                value={filters.mealtypeIds || []}
+                onChange={(e: string[]) => {
+                  setFilters((f) => {
+                    return { ...f, mealtypeIds: e };
+                  });
+                }}
+              >
+                {mealTypes.map((e) => {
+                  return (
+                    <Option value={e.id} key={e.id}>
+                      {e.meal_type}
+                    </Option>
+                  );
+                })}
               </Select>
             </Form.Item>
 

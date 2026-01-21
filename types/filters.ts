@@ -5,6 +5,8 @@ export interface Filters {
   free?: boolean;
   rating?: number;
   area?: string;
+  cuisineIds?: string[];
+  mealtypeIds?: string[];
 }
 
 export interface BasicFilters {
