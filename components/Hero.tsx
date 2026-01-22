@@ -12,19 +12,25 @@ import FiltersSideBar from "./FiltersSideBar";
 import { Filters } from "@/types/filters";
 import { Cuisine } from "@/types/cuisine";
 import { MealType } from "@/types/mealType";
+import Pagination from "./Pagination";
 
 const Hero = ({
   cities,
   restaurants,
   mealTypes,
   cuisines,
+  pages,
 }: {
   cities: City[];
   restaurants: Restaurant[];
   mealTypes: MealType[];
   cuisines: Cuisine[];
+  pages: number;
 }) => {
   const [refetch, setRefetch] = useState<Boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(pages);
+  const [currPage, setCurrPage] = useState<number>(1);
+
   const [listedRestaurants, setListedRestaurants] =
     useState<Restaurant[]>(restaurants);
 
@@ -49,12 +55,15 @@ const Hero = ({
 
   const getRestaurants = async (additionalFilters: Filters = {}) => {
     try {
-      const query = { ...basicFilters, ...additionalFilters };
+      const query = { ...basicFilters, ...additionalFilters, page: currPage };
       console.log(objectToQueryParams(query));
-      const { data } = await API.get<Restaurant[]>(
-        `/restaurants?${objectToQueryParams(query)}`,
-      );
-      setListedRestaurants(data);
+      const { data } = await API.get<{
+        restaurants: Restaurant[];
+        pages: number;
+      }>(`/restaurants?${objectToQueryParams(query)}`);
+      setListedRestaurants(data.restaurants);
+      console.log(data.pages);
+      setTotalPages(data.pages);
     } catch (e) {}
   };
 
@@ -67,7 +76,7 @@ const Hero = ({
     if (refetch) {
       getRestaurants();
     }
-  }, [refetch, basicFilters.city]);
+  }, [refetch, basicFilters.city, currPage]);
 
   const applyFilters = (sidebarFilters: Filters) => {
     getRestaurants(sidebarFilters);
@@ -140,6 +149,16 @@ const Hero = ({
         )}
         <Restaurants restaurants={listedRestaurants} />
       </div>
+      <Pagination
+        currPage={currPage}
+        setCurrPage={(curr: number) => {
+          if (!refetch) {
+            setRefetch(true);
+          }
+          setCurrPage(curr);
+        }}
+        totalPages={totalPages}
+      />
     </div>
   );
 };

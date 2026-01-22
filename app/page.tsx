@@ -7,7 +7,9 @@ import { MealType } from "@/types/mealType";
 import { Cuisine } from "@/types/cuisine";
 
 const getRestaurants = async () => {
-  const { data } = await API.get<Restaurant[]>("/restaurants/delhi-ncr");
+  const { data } = await API.get<{ restaurants: Restaurant[]; pages: number }>(
+    "/restaurants?city=delhi-ncr",
+  );
   return data;
 };
 
@@ -28,7 +30,7 @@ const getCuisines = async () => {
 
 export default async function Home() {
   try {
-    const [cities, restaurants, mealTypes, cuisines] = await Promise.all([
+    const [cities, data, mealTypes, cuisines] = await Promise.all([
       getCities(),
       getRestaurants(),
       getMealTypes(),
@@ -41,7 +43,8 @@ export default async function Home() {
           <Navbar />
           <Hero
             cities={cities}
-            restaurants={restaurants}
+            restaurants={data.restaurants}
+            pages={data.pages}
             mealTypes={mealTypes}
             cuisines={cuisines}
           />
