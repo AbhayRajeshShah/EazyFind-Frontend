@@ -7,26 +7,31 @@ import {
   Checkbox,
   CheckboxChangeEvent,
 } from "antd";
-import { Filters } from "@/types/filters";
 import { MealType } from "../types/mealType";
 import { Cuisine } from "@/types/cuisine";
+import { AllFilters } from "@/types/filters";
+import { RefreshCcw } from "lucide-react";
 
 const { Option } = Select;
 
 const FiltersSideBar = ({
-  applyFilters,
   mealTypes,
   cuisines,
+  filters,
+  setFilters,
+  handleFilterChange,
+  resetFilters,
 }: {
-  applyFilters: (sidebarFilters: Filters) => void;
   mealTypes: MealType[];
   cuisines: Cuisine[];
+  filters: AllFilters;
+  setFilters: React.Dispatch<React.SetStateAction<AllFilters>>;
+  handleFilterChange: () => void;
+  resetFilters: () => void;
 }) => {
-  const [filters, setFilters] = useState<Filters>({
-    area: "",
-  });
-  const [changed, setChanged] = useState(false);
   const [cost, setCost] = useState([0, 10000]);
+
+  const [form] = Form.useForm();
 
   const updateItems = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -46,18 +51,32 @@ const FiltersSideBar = ({
     });
   }, [cost]);
 
+  useEffect(() => {
+    form.setFieldsValue(filters);
+  }, [filters]);
+
   return (
     <div
       className="w-100 overflow-auto p-6 rounded-md h-[80svh] flex flex-col sticky top-28 shadow-md"
       style={{ backgroundColor: "#f2eed3" }}
     >
       <div className="">
-        <p className="text-lg font-poppins border-b border-black/20 pb-2">
-          Filters
-        </p>
+        <div className="flex justify-between items-center w-full border-b border-black/20 pb-2">
+          <p className="text-lg font-poppins ">AllFilters</p>
+          <button
+            onClick={() => {
+              setCost([0, 10000]);
+              resetFilters();
+              form.resetFields();
+            }}
+            className="w-fit cursor-pointer text-right text-primary rounded-md"
+          >
+            <RefreshCcw className="w-5" />
+          </button>
+        </div>
 
         <div className="flex flex-col mt-6">
-          <Form layout="vertical">
+          <Form form={form} layout="vertical">
             {/* Area */}
             <Form.Item label="Area" name="area">
               <Input
@@ -159,13 +178,13 @@ const FiltersSideBar = ({
           </Form>
         </div>
       </div>
-      <div
-        onClick={() => {
-          applyFilters(filters);
-        }}
-        className="w-full flex justify-end"
-      >
-        <button className="w-fit cursor-pointer text-right bg-primary text-background px-6 py-3 rounded-md">
+      <div className="w-full flex gap-2 justify-end">
+        <button
+          onClick={() => {
+            handleFilterChange();
+          }}
+          className="w-fit cursor-pointer text-right bg-primary text-background px-6 py-3 rounded-md"
+        >
           Apply
         </button>
       </div>

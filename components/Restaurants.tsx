@@ -3,7 +3,6 @@ import { Restaurant } from "@/types/restaurant";
 import { Star, Users } from "lucide-react";
 
 const Restaurants = ({ restaurants }: { restaurants: Restaurant[] }) => {
-  console.log(restaurants);
   return (
     <div className=" ">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

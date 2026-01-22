@@ -13,3 +13,5 @@ export interface BasicFilters {
   city?: string;
   name?: string;
 }
+
+export interface AllFilters extends Filters, BasicFilters {}

@@ -2,17 +2,17 @@
 import React, { useState, useEffect } from "react";
 import { City } from "@/types/city";
 import { Restaurant } from "@/types/restaurant";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, LoaderCircle } from "lucide-react";
 import { API } from "@/api/config";
 import Restaurants from "./Restaurants";
-import { BasicFilters } from "@/types/filters";
 import { objectToQueryParams } from "@/utils/URLEncoder";
 import { SlidersHorizontal } from "lucide-react";
 import FiltersSideBar from "./FiltersSideBar";
-import { Filters } from "@/types/filters";
+import { Filters, AllFilters } from "@/types/filters";
 import { Cuisine } from "@/types/cuisine";
 import { MealType } from "@/types/mealType";
 import Pagination from "./Pagination";
+import { updateUrlQuery, getQueryParams } from "@/utils/URLEncoder";
 
 const Hero = ({
   cities,
@@ -31,13 +31,18 @@ const Hero = ({
   const [totalPages, setTotalPages] = useState<number>(pages);
   const [currPage, setCurrPage] = useState<number>(1);
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   const [listedRestaurants, setListedRestaurants] =
     useState<Restaurant[]>(restaurants);
 
-  const [basicFilters, setBasicFilters] = useState<BasicFilters>({
+  const [filters, setFilters] = useState<AllFilters>({
     city: cities[0].city_name,
-    name: "",
   });
+
+  const handleFilterChange = () => {
+    setRefetch(true);
+  };
 
   const [toggleSideBar, setToggleSideBar] = useState<Boolean>(false);
 
@@ -45,46 +50,63 @@ const Hero = ({
     e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
-    setBasicFilters((prev) => {
+    setFilters((prev) => {
       return { ...prev, [name]: value };
     });
-    if (!refetch) {
-      setRefetch(true);
-    }
   };
 
   const getRestaurants = async (additionalFilters: Filters = {}) => {
+    setLoading(true);
     try {
-      const query = { ...basicFilters, ...additionalFilters, page: currPage };
-      console.log(objectToQueryParams(query));
+      const query = { ...filters, ...additionalFilters, page: currPage };
       const { data } = await API.get<{
         restaurants: Restaurant[];
         pages: number;
       }>(`/restaurants?${objectToQueryParams(query)}`);
       setListedRestaurants(data.restaurants);
-      console.log(data.pages);
       setTotalPages(data.pages);
+      updateUrlQuery(query);
     } catch (e) {}
+    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    getRestaurants();
+    setRefetch(true);
   };
+
+  console.log(refetch);
 
   useEffect(() => {
     if (refetch) {
       getRestaurants();
+      setRefetch(false);
     }
-  }, [refetch, basicFilters.city, currPage]);
+  }, [refetch, filters.city, currPage]);
 
-  const applyFilters = (sidebarFilters: Filters) => {
-    getRestaurants(sidebarFilters);
+  const resetFilters = () => {
+    setFilters((f) => {
+      return { city: f.city, name: f.name || "", minCost: 0, maxCost: 10000 };
+    });
+    setRefetch(true);
   };
+
+  useEffect(() => {
+    if (mealTypes.length == 0 && cuisines.length == 0) return;
+    const queryParams = getQueryParams();
+    setFilters((e) => {
+      return {
+        ...queryParams.filter,
+        city: queryParams.filter.city || "delhi-ncr",
+        name: "",
+      };
+    });
+    setCurrPage(queryParams.page);
+  }, [mealTypes, cuisines]);
 
   return (
     <div className="px-12">
-      <div className="flex px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
+      <div className="flex relative z-20 px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
         <h1 className="text-[52px] font-poppins uppercase font-bold">
           Discover Your Next{" "}
           <span className="text-primary">Favorite Meal.</span>
@@ -108,7 +130,7 @@ const Hero = ({
           <MapPin />
           <select
             className="outline-none px-3 border-none py-4"
-            value={basicFilters.city}
+            value={filters.city}
             onChange={updateBasicInputs}
             name="city"
           >
@@ -130,7 +152,7 @@ const Hero = ({
               className="outline-none border-none py-4 flex-1"
               placeholder="Search by restaurant..."
               name="name"
-              value={basicFilters.name}
+              value={filters.name || ""}
               onChange={updateBasicInputs}
             />
           </div>
@@ -144,10 +166,24 @@ const Hero = ({
           <FiltersSideBar
             cuisines={cuisines}
             mealTypes={mealTypes}
-            applyFilters={applyFilters}
+            filters={filters}
+            setFilters={setFilters}
+            handleFilterChange={handleFilterChange}
+            resetFilters={resetFilters}
           />
         )}
-        <Restaurants restaurants={listedRestaurants} />
+        <div className="relative">
+          {/* content */}
+          {loading && (
+            <div className="fixed inset-0 bg-gray-50/50 z-10">
+              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <LoaderCircle className="animate-spin text-primary w-8 h-8" />
+              </div>
+            </div>
+          )}
+
+          <Restaurants restaurants={listedRestaurants} />
+        </div>
       </div>
       <Pagination
         currPage={currPage}
