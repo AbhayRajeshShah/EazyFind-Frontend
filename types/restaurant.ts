@@ -18,6 +18,7 @@ export interface Restaurant {
   image_url?: string;
   restaurant_cuisines?: RestaurantCuisine[];
   restaurant_meal_types?: RestaurantMealType[];
+  distance_meters?: number;
 }
 
 export interface RestaurantCuisine {

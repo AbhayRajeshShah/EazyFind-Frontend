@@ -19,14 +19,12 @@ const FiltersSideBar = ({
   cuisines,
   filters,
   setFilters,
-  handleFilterChange,
   resetFilters,
 }: {
   mealTypes: MealType[];
   cuisines: Cuisine[];
   filters: AllFilters;
   setFilters: React.Dispatch<React.SetStateAction<AllFilters>>;
-  handleFilterChange: () => void;
   resetFilters: () => void;
 }) => {
   const [cost, setCost] = useState([0, 10000]);
@@ -57,12 +55,12 @@ const FiltersSideBar = ({
 
   return (
     <div
-      className="w-100 overflow-auto p-6 rounded-md h-[80svh] flex flex-col sticky top-28 shadow-md"
+      className="w-100 max-w-[20rem] overflow-auto p-6 rounded-md h-[80svh] flex flex-col sticky top-28 shadow-md"
       style={{ backgroundColor: "#f2eed3" }}
     >
       <div className="">
         <div className="flex justify-between items-center w-full border-b border-black/20 pb-2">
-          <p className="text-lg font-poppins ">AllFilters</p>
+          <p className="text-lg font-poppins ">Filters</p>
           <button
             onClick={() => {
               setCost([0, 10000]);
@@ -177,16 +175,6 @@ const FiltersSideBar = ({
             </Form.Item>
           </Form>
         </div>
-      </div>
-      <div className="w-full flex gap-2 justify-end">
-        <button
-          onClick={() => {
-            handleFilterChange();
-          }}
-          className="w-fit cursor-pointer text-right bg-primary text-background px-6 py-3 rounded-md"
-        >
-          Apply
-        </button>
       </div>
     </div>
   );

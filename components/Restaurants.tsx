@@ -26,6 +26,13 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
         className="w-full h-48 object-cover rounded-md mb-4"
       />
       <div className="p-4 flex  flex-1 flex-col justify-between">
+        {restaurant.distance_meters &&
+          Math.round(restaurant.distance_meters / 1000) < 100 && (
+            <p className="text-xs pb-2">
+              {Math.round(restaurant.distance_meters / 1000)} km
+            </p>
+          )}
+
         <div className=" flex gap-1">
           <div className="flex flex-col flex-3">
             <h2 className="text-xl col-span-3 font-bold mb-2 font-inter">
