@@ -113,7 +113,7 @@ const Hero = ({
         </p>
       </div>
 
-      <div className="m-auto items-center sticky top-0 p-4 w-full flex gap-4  bg-white rounded-lg">
+      <div className="m-auto z-10 items-center sticky top-0 p-4 w-full flex gap-4  bg-white rounded-lg">
         <button
           onClick={() => setToggleSideBar(!toggleSideBar)}
           className="px-3 h-full py-3 cursor-pointer bg-primary text-background rounded-lg"
