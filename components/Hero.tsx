@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { City } from "@/types/city";
 import { Restaurant } from "@/types/restaurant";
 import { Search, MapPin, LoaderCircle, SlidersHorizontal } from "lucide-react";
@@ -16,6 +16,7 @@ import { Cuisine } from "@/types/cuisine";
 import { MealType } from "@/types/mealType";
 import Pagination from "./Pagination";
 import { useUserLocation } from "@/utils/useLocation";
+import DebouncedInput from "./DebouncedInput";
 
 const Hero = ({
   cities,
@@ -32,7 +33,10 @@ const Hero = ({
 }) => {
   const [listedRestaurants, setListedRestaurants] =
     useState<Restaurant[]>(restaurants);
-  const [filters, setFilters] = useState<AllFilters>({ city: "" });
+  const [filters, setFilters] = useState<AllFilters>({
+    city: restaurants[0].city,
+    name: "",
+  });
   const [currPage, setCurrPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(pages);
   const [loading, setLoading] = useState<boolean>(false);
@@ -60,7 +64,11 @@ const Hero = ({
   const getRestaurants = async () => {
     setLoading(true);
     try {
-      const query = { ...filters, page: currPage, ...location };
+      const query = {
+        ...filters,
+        page: currPage,
+        ...location,
+      };
       const { data } = await API.get<{
         restaurants: Restaurant[];
         pages: number;
@@ -100,6 +108,12 @@ const Hero = ({
     getRestaurants();
   };
 
+  const updateDebouncedInputs = (val: string, param: string) => {
+    setFilters((f) => {
+      return { ...filters, [param]: val };
+    });
+  };
+
   return (
     <div className="px-12">
       <div className="flex relative px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
@@ -130,24 +144,27 @@ const Hero = ({
             name="city"
           >
             <option value="">Select City</option>
-            {cities.map((c) => (
-              <option value={c.city_name} key={c.id}>
-                {c.city_name}
-              </option>
-            ))}
+            {cities.map((c) => {
+              let [firstLetter, ...restChars] = c.city_name;
+              return (
+                <option value={c.city_name} key={c.id}>
+                  {firstLetter.toUpperCase()}
+                  {...restChars}
+                </option>
+              );
+            })}
           </select>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-1 gap-4">
           <div className="rounded-md flex-1 px-6 gap-6 flex items-center text-foreground bg-background">
             <Search />
-            <input
-              type="text"
+            <DebouncedInput
               className="outline-none border-none py-4 flex-1"
               placeholder="Search by restaurant..."
               name="name"
               value={filters.name || ""}
-              onChange={updateBasicInputs}
+              onChange={updateDebouncedInputs}
             />
           </div>
           <button className="px-6 cursor-pointer py-4 bg-primary rounded-md text-background">

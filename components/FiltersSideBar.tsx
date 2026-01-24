@@ -6,6 +6,7 @@ import {
   Select,
   Checkbox,
   CheckboxChangeEvent,
+  ConfigProvider,
 } from "antd";
 import { MealType } from "../types/mealType";
 import { Cuisine } from "@/types/cuisine";
@@ -35,7 +36,9 @@ const FiltersSideBar = ({
     const { name, value } = e.target;
     if (name === "discount") {
       if (parseInt(value) > 100) {
-        return;
+        setFilters((f) => {
+          return { ...f, discount: 100 };
+        });
       }
     }
     setFilters((f) => {
@@ -74,106 +77,129 @@ const FiltersSideBar = ({
         </div>
 
         <div className="flex flex-col mt-6">
-          <Form form={form} layout="vertical">
-            {/* Area */}
-            <Form.Item label="Area" name="area">
-              <Input
-                placeholder="Enter area"
-                className="bg-transparent border-black/30"
-                value={filters.area}
-                onChange={updateItems}
-                name="area"
-              />
-            </Form.Item>
+          <ConfigProvider
+            theme={{
+              components: {
+                Input: {
+                  paddingBlock: 8, // vertical padding
+                  paddingInline: 16, // horizontal padding
+                },
+                InputNumber: {
+                  paddingBlock: 8,
+                  paddingInline: 16,
+                },
+                Select: {
+                  controlHeight: 48,
+                },
+              },
+            }}
+          >
+            <Form form={form} layout="vertical">
+              {/* Area */}
+              <Form.Item label="Area" name="area">
+                <Input
+                  placeholder="Enter area"
+                  className="bg-transparent border-black/30"
+                  value={filters.area}
+                  onChange={updateItems}
+                  name="area"
+                />
+              </Form.Item>
 
-            {/* Cost Range */}
-            <Form.Item label={`Cost Range (${cost[0]} - ${cost[1]})`}>
-              <Slider
-                range
-                min={0}
-                max={10000}
-                value={cost}
-                step={100}
-                onChange={setCost}
-              />
-            </Form.Item>
+              {/* Cost Range */}
+              <Form.Item label={`Cost Range (${cost[0]} - ${cost[1]})`}>
+                <Slider
+                  range
+                  min={0}
+                  max={10000}
+                  value={cost}
+                  step={100}
+                  onChange={setCost}
+                />
+              </Form.Item>
 
-            {/* Discount */}
-            <Form.Item label="Minimum Discount (%)" name="discount">
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                className="bg-transparent border-black/30"
-                value={filters.discount}
-                name="discount"
-                onChange={updateItems}
-              />
-            </Form.Item>
+              {/* Discount */}
+              <Form.Item label="Minimum Discount (%)" name="discount">
+                <Input
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="bg-transparent border-black/30"
+                  value={filters.discount}
+                  name="discount"
+                  onChange={updateItems}
+                  placeholder="Discount eg:(40)"
+                />
+              </Form.Item>
 
-            {/* Cuisines */}
-            <Form.Item label="Cuisines" name="cuisineIds">
-              <Select
-                mode="multiple"
-                placeholder="Select cuisines"
-                className="bg-transparent"
-                value={filters.cuisineIds || []}
-                maxCount={5}
-                onChange={(e: string[]) => {
-                  setFilters((f) => {
-                    return { ...f, cuisineIds: e };
-                  });
-                }}
-              >
-                {cuisines.map((e) => {
-                  return (
-                    <Option value={e.id} key={e.id}>
-                      {e.cuisine_name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
+              {/* Cuisines */}
+              <Form.Item label="Cuisines" name="cuisineIds">
+                <Select
+                  mode="multiple"
+                  placeholder="Select cuisines"
+                  className="bg-transparent capitalize"
+                  value={filters.cuisineIds || []}
+                  maxCount={5}
+                  onChange={(e: string[]) => {
+                    setFilters((f) => {
+                      return { ...f, cuisineIds: e };
+                    });
+                  }}
+                >
+                  {cuisines.map((e) => {
+                    const [firstLetter, ...restChars] = e.cuisine_name;
+                    return (
+                      <Option value={e.id} key={e.id}>
+                        {firstLetter.toUpperCase()}
+                        {...restChars}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
 
-            {/* Meal Types */}
-            <Form.Item label="Meal Types" name="mealTypes">
-              <Select
-                mode="multiple"
-                placeholder="Select Meal Type"
-                className="bg-transparent"
-                maxCount={5}
-                value={filters.mealtypeIds || []}
-                onChange={(e: string[]) => {
-                  setFilters((f) => {
-                    return { ...f, mealtypeIds: e };
-                  });
-                }}
-              >
-                {mealTypes.map((e) => {
-                  return (
-                    <Option value={e.id} key={e.id}>
-                      {e.meal_type}
-                    </Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
+              {/* Meal Types */}
+              <Form.Item label="Meal Types" name="mealTypes">
+                <Select
+                  mode="multiple"
+                  placeholder="Select Meal Type"
+                  className="bg-transparent"
+                  maxCount={5}
+                  value={filters.mealtypeIds || []}
+                  onChange={(e: string[]) => {
+                    setFilters((f) => {
+                      return { ...f, mealtypeIds: e };
+                    });
+                  }}
+                >
+                  {mealTypes.map((e) => {
+                    const [firstletter, ...restChars] = e.meal_type;
+                    return (
+                      <Option value={e.id} key={e.id}>
+                        {firstletter.toUpperCase()}
+                        {...restChars}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
 
-            {/* Free */}
-            <Form.Item name="free" valuePropName="checked">
-              <Checkbox
-                value={filters.free || false}
-                onChange={(e: CheckboxChangeEvent) => {
-                  setFilters((f) => {
-                    return { ...f, free: e.target.checked };
-                  });
-                }}
-                className="text-black"
-              >
-                Free
-              </Checkbox>
-            </Form.Item>
-          </Form>
+              {/* Free */}
+              <Form.Item name="free" valuePropName="checked">
+                <Checkbox
+                  value={filters.free || false}
+                  onChange={(e: CheckboxChangeEvent) => {
+                    setFilters((f) => {
+                      return { ...f, free: e.target.checked };
+                    });
+                  }}
+                  className="text-black"
+                >
+                  Free
+                </Checkbox>
+              </Form.Item>
+            </Form>
+          </ConfigProvider>
         </div>
       </div>
     </div>
