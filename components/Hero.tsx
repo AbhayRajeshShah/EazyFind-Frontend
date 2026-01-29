@@ -36,6 +36,8 @@ const Hero = ({
   const [filters, setFilters] = useState<AllFilters>({
     city: restaurants[0].city,
     name: "",
+    minCost: 0,
+    maxCost: 10000,
   });
   const [currPage, setCurrPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(pages);
@@ -129,6 +131,7 @@ const Hero = ({
 
       <div className="m-auto z-10 items-center sticky top-0 p-4 w-full flex gap-4  bg-white rounded-lg">
         <button
+          data-testid="filter-toggle"
           onClick={() => setToggleSideBar(!toggleSideBar)}
           className="px-3 h-full py-3 cursor-pointer bg-primary text-background rounded-lg"
         >
@@ -142,6 +145,7 @@ const Hero = ({
             value={filters.city}
             onChange={updateBasicInputs}
             name="city"
+            data-testid="filter-city"
           >
             <option value="">Select City</option>
             {cities.map((c) => {
@@ -184,7 +188,7 @@ const Hero = ({
           />
         )}
 
-        <div className="relative">
+        <div className="relative w-full">
           {loading && (
             <div className="fixed inset-0 bg-gray-50/50 z-10">
               <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -196,12 +200,17 @@ const Hero = ({
           <Restaurants restaurants={listedRestaurants} />
         </div>
       </div>
-
-      <Pagination
-        currPage={currPage}
-        setCurrPage={setCurrPage}
-        totalPages={totalPages}
-      />
+      {listedRestaurants.length > 0 ? (
+        <Pagination
+          currPage={currPage}
+          setCurrPage={setCurrPage}
+          totalPages={totalPages}
+        />
+      ) : (
+        <p data-testid="error" className="text-center pb-6 text-lg">
+          No restaurants found
+        </p>
+      )}
     </div>
   );
 };

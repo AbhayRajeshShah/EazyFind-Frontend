@@ -48,6 +48,9 @@ const FiltersSideBar = ({
 
   useEffect(() => {
     setFilters((f) => {
+      if (f.minCost === cost[0] && f.maxCost === cost[1]) {
+        return f;
+      }
       return { ...f, minCost: cost[0], maxCost: cost[1] };
     });
   }, [cost]);
@@ -58,6 +61,7 @@ const FiltersSideBar = ({
 
   return (
     <div
+      data-testid="filter-sidebar"
       className="w-100 max-w-[20rem] overflow-auto p-6 rounded-md h-[80svh] flex flex-col sticky top-28 shadow-md"
       style={{ backgroundColor: "#f2eed3" }}
     >
@@ -91,6 +95,12 @@ const FiltersSideBar = ({
                 Select: {
                   controlHeight: 48,
                 },
+                Form: {
+                  itemMarginBottom: 10,
+                },
+              },
+              token: {
+                colorPrimary: "#8b1e3f",
               },
             }}
           >
@@ -105,7 +115,19 @@ const FiltersSideBar = ({
                   name="area"
                 />
               </Form.Item>
-
+              <Form.Item label="Rating">
+                <Slider
+                  min={1}
+                  value={filters.rating}
+                  step={1}
+                  max={5}
+                  onChange={(e: number) => {
+                    setFilters((f) => {
+                      return { ...f, rating: e };
+                    });
+                  }}
+                />
+              </Form.Item>
               {/* Cost Range */}
               <Form.Item label={`Cost Range (${cost[0]} - ${cost[1]})`}>
                 <Slider

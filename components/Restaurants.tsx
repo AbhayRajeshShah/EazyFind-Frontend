@@ -3,23 +3,28 @@ import { Restaurant } from "@/types/restaurant";
 import { Star, Users } from "lucide-react";
 
 const Restaurants = ({ restaurants }: { restaurants: Restaurant[] }) => {
-  return (
-    <div className=" ">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {restaurants.map((restaurant) => (
-          <RestaurantCard
-            key={restaurant.id.toString()}
-            restaurant={restaurant}
-          />
-        ))}
-      </div>
+  return restaurants.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {restaurants.map((restaurant) => (
+        <RestaurantCard
+          key={restaurant.id.toString()}
+          restaurant={restaurant}
+        />
+      ))}
+    </div>
+  ) : (
+    <div className="flex w-full justify-center">
+      <img src={"no_results.svg"} className="h-60 object-fit" />
     </div>
   );
 };
 
 const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   return (
-    <div className="rounded-lg bg-olive shadow-md flex flex-col font-poppins">
+    <div
+      data-testid="restaurant-item"
+      className="rounded-lg restaurant-item bg-olive shadow-md flex flex-col font-poppins"
+    >
       <img
         src={restaurant.image_url || "/placeholder-restaurant.png"}
         alt={restaurant.restaurant_name || "Restaurant Image"}

@@ -33,6 +33,7 @@ const DebouncedInput = ({
 
   return (
     <input
+      data-testid={"filter-" + name}
       className={className}
       value={val}
       name={name}

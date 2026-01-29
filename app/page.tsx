@@ -56,7 +56,7 @@ export default async function Home() {
 
     return (
       <div className="bg-background w-full flex items-center justify-center h-screen">
-        <p className="text-muted-foreground">
+        <p data-testid="error-message" className="text-muted-foreground error">
           Failed to load data. Please try again later.
         </p>
       </div>
