@@ -84,6 +84,14 @@ const Hero = ({
     setLoading(false);
   };
 
+  const getCityByUserLocation = async () => {
+    const { data } = await API.get<{ city: string }>(
+      `/cities/getCity?lat=${location.lat}&lon=${location.lon}`,
+    );
+    setFilters((prev) => ({ ...prev, city: data.city }));
+    return data.city;
+  };
+
   useEffect(() => {
     if (!mealTypes.length && !cuisines.length && !cities.length) return;
 
@@ -102,7 +110,12 @@ const Hero = ({
       return;
     }
     getRestaurants();
-  }, [filters, currPage, location.lat, location.lon]);
+  }, [filters, currPage]);
+
+  useEffect(() => {
+    setLoading(true);
+    getCityByUserLocation();
+  }, [location.lat, location.lon]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
