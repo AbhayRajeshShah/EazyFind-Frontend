@@ -171,7 +171,7 @@ const FiltersSideBar = ({
                   {cuisines.map((e) => {
                     const [firstLetter, ...restChars] = e.cuisine_name;
                     return (
-                      <Option value={e.id} key={e.id}>
+                      <Option value={`${e.cuisine_name}-${e.id}`} key={e.id}>
                         {firstLetter.toUpperCase()}
                         {...restChars}
                       </Option>
@@ -197,7 +197,7 @@ const FiltersSideBar = ({
                   {mealTypes.map((e) => {
                     const [firstletter, ...restChars] = e.meal_type;
                     return (
-                      <Option value={e.id} key={e.id}>
+                      <Option value={`${e.meal_type}-${e.id}`} key={e.id}>
                         {firstletter.toUpperCase()}
                         {...restChars}
                       </Option>

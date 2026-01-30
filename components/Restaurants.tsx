@@ -1,6 +1,6 @@
 import React from "react";
 import { Restaurant } from "@/types/restaurant";
-import { Star, Users } from "lucide-react";
+import { Star, Users, ExternalLink } from "lucide-react";
 
 const Restaurants = ({ restaurants }: { restaurants: Restaurant[] }) => {
   return restaurants.length > 0 ? (
@@ -23,8 +23,16 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   return (
     <div
       data-testid="restaurant-item"
-      className="rounded-lg restaurant-item bg-olive shadow-md flex flex-col font-poppins"
+      className="rounded-lg restaurant-item relative restaurant bg-olive shadow-md flex flex-col font-poppins"
     >
+      <a
+        href={`${restaurant.url}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-0 right-0 h-8 w-8 rounded-b-lg rounded-tl-lg bg-white text-black flex justify-center items-center"
+      >
+        <ExternalLink className="w-4" />
+      </a>
       <img
         src={restaurant.image_url || "/placeholder-restaurant.png"}
         alt={restaurant.restaurant_name || "Restaurant Image"}

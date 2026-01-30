@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { City } from "@/types/city";
 import { Restaurant } from "@/types/restaurant";
-import { Search, MapPin, LoaderCircle, SlidersHorizontal } from "lucide-react";
+import { Search, MapPin, LoaderCircle, FunnelPlus } from "lucide-react";
 import { API } from "@/api/config";
 import Restaurants from "./Restaurants";
 import {
@@ -148,9 +148,8 @@ const Hero = ({
           onClick={() => setToggleSideBar(!toggleSideBar)}
           className="px-3 h-full py-3 cursor-pointer bg-primary text-background rounded-lg"
         >
-          <SlidersHorizontal className="text-background" />
+          <FunnelPlus className="text-background w-5 h-5" />
         </button>
-
         <div className="rounded-md px-6 gap-2 flex items-center text-foreground bg-background">
           <MapPin />
           <select
