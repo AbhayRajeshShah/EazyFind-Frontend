@@ -101,12 +101,12 @@ const Hero = ({
 
   // ------------ Fetch Restaurants on filter or page change --------------
 
-  const getRestaurants = async () => {
+  const getRestaurants = async (page: number = 1) => {
     setLoading(true);
     try {
       const query = {
         ...filters,
-        page: currPage,
+        page: page,
         ...location,
       };
       const { data } = await API.get<{
@@ -122,13 +122,24 @@ const Hero = ({
     setLoading(false);
   };
 
+  // on page change get restaurants
   useEffect(() => {
     if (firstLoad.current) {
       firstLoad.current = false;
       return;
     }
+    getRestaurants(currPage);
+  }, [currPage]);
+
+  useEffect(() => {
+    // filter changed and we are on a diff page
+    if (currPage !== 1) {
+      setCurrPage(1);
+      return;
+    }
+    // we are on page 1 and filters changed, call get
     getRestaurants();
-  }, [filters, currPage]);
+  }, [filters]);
 
   // ------------ Get City from user location ----------------
 
