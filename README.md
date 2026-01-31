@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EAZYFIND - Restaurant Finder Application
+
+<i>This repo is scoped to the <b>frontend</b> of EAZYFIND.</i>
+
+Eazyfind is a restaurant finder application built with Next.js and TypeScript. It allows users to search for restaurants, apply various filters, and view restaurant details.
+
+## Technologies Used
+
+- Next.js
+- TypeScript
+- Ant Design
+- TailwindCSS
+
+## Core Features:
+
+- Smart search: Find restaurants using multiple filters.
+- Nearby restaurants: Get recommendations based on your current location.
+- Paginated listings: Load restaurants incrementally for faster performance.
+- Debounced filters: Filters update smoothly without unnecessary API calls.
+- URL-synced filters: Share filtered views or bookmark them for later.
+- Server-side rendering: Fast initial load and SEO-friendly content.
+
+## Prerequisites
+
+- `Node.js >= 18.x`
+- `npm >= 9.x`
 
 ## Getting Started
 
-First, run the development server:
+First, install the necessary dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Refer to the [.env.example](.env.example) file for environment variable configurations.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## End to End Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To run the end-to-end tests written in Playwright, use the following command:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+ npm run test:e2e
+```

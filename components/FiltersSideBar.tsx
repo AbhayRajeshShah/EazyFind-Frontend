@@ -12,6 +12,7 @@ import { MealType } from "../types/mealType";
 import { Cuisine } from "@/types/cuisine";
 import { AllFilters } from "@/types/filters";
 import { RefreshCcw } from "lucide-react";
+import { useRef } from "react";
 
 const { Option } = Select;
 
@@ -28,12 +29,16 @@ const FiltersSideBar = ({
   setFilters: React.Dispatch<React.SetStateAction<AllFilters>>;
   resetFilters: () => void;
 }) => {
-  const [cost, setCost] = useState([0, 10000]);
-
   const [form] = Form.useForm();
+  const [cost, setCost] = useState([0, 10000]);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // --------------- Handle Change ---------------
 
   const updateItems = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // Prevent user from exceeding 100
     if (name === "discount") {
       if (parseInt(value) > 100) {
         setFilters((f) => {
@@ -41,20 +46,28 @@ const FiltersSideBar = ({
         });
       }
     }
+
     setFilters((f) => {
       return { ...f, [name]: value };
     });
   };
 
+  // -------------- Debounce filter update on cost param --------------
   useEffect(() => {
-    setFilters((f) => {
-      if (f.minCost === cost[0] && f.maxCost === cost[1]) {
-        return f;
-      }
-      return { ...f, minCost: cost[0], maxCost: cost[1] };
-    });
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setFilters((f) => {
+        if (f.minCost === cost[0] && f.maxCost === cost[1]) {
+          return f;
+        }
+        return { ...f, minCost: cost[0], maxCost: cost[1] };
+      });
+    }, 500);
   }, [cost]);
 
+  // --------- Update fields from updated filters ------------
   useEffect(() => {
     form.setFieldsValue(filters);
   }, [filters]);

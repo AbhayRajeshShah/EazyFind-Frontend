@@ -31,20 +31,29 @@ const Hero = ({
   cuisines: Cuisine[];
   pages: number;
 }) => {
+  //loading state
+  const [loading, setLoading] = useState<boolean>(false);
+  const firstLoad = useRef(true);
+
+  //restaurants
   const [listedRestaurants, setListedRestaurants] =
     useState<Restaurant[]>(restaurants);
+
+  //filters
   const [filters, setFilters] = useState<AllFilters>({
     city: restaurants[0].city,
     name: "",
     minCost: 0,
     maxCost: 10000,
   });
+  const location = useUserLocation({ setLoading });
   const [currPage, setCurrPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(pages);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  // sidebar toggle
   const [toggleSideBar, setToggleSideBar] = useState<boolean>(false);
-  const location = useUserLocation({ setLoading });
-  const firstLoad = useRef(true);
+
+  // ---------- Handlers ----------------
 
   const updateBasicInputs = (
     e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
@@ -52,6 +61,14 @@ const Hero = ({
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
+
+  const updateDebouncedInputs = (val: string, param: string) => {
+    setFilters((f) => {
+      return { ...filters, [param]: val };
+    });
+  };
+
+  // ---------- Form Events --------------
 
   const resetFilters = () => {
     setFilters((f) => ({
@@ -62,7 +79,28 @@ const Hero = ({
     }));
   };
 
-  // Fetch restaurants
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setCurrPage(1);
+    getRestaurants();
+  };
+
+  // ----------- Populate filters from URL search params ----------------
+
+  useEffect(() => {
+    if (!mealTypes.length && !cuisines.length && !cities.length) return;
+
+    const queryParams = getQueryParams();
+    setFilters((prev) => ({
+      ...prev,
+      ...queryParams.filter,
+      city: queryParams.filter.city || "delhi-ncr",
+    }));
+    setCurrPage(queryParams.page || 1);
+  }, [mealTypes, cuisines, cities]);
+
+  // ------------ Fetch Restaurants on filter or page change --------------
+
   const getRestaurants = async () => {
     setLoading(true);
     try {
@@ -84,6 +122,16 @@ const Hero = ({
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
+    getRestaurants();
+  }, [filters, currPage]);
+
+  // ------------ Get City from user location ----------------
+
   const getCityByUserLocation = async () => {
     const { data } = await API.get<{ city: string }>(
       `/cities/getCity?lat=${location.lat}&lon=${location.lon}`,
@@ -93,44 +141,13 @@ const Hero = ({
   };
 
   useEffect(() => {
-    if (!mealTypes.length && !cuisines.length && !cities.length) return;
-
-    const queryParams = getQueryParams();
-    setFilters((prev) => ({
-      ...prev,
-      ...queryParams.filter,
-      city: queryParams.filter.city || "delhi-ncr",
-    }));
-    setCurrPage(queryParams.page || 1);
-  }, [mealTypes, cuisines, cities]);
-
-  useEffect(() => {
-    if (firstLoad.current) {
-      firstLoad.current = false;
-      return;
-    }
-    getRestaurants();
-  }, [filters, currPage]);
-
-  useEffect(() => {
     setLoading(true);
     getCityByUserLocation();
   }, [location.lat, location.lon]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setCurrPage(1);
-    getRestaurants();
-  };
-
-  const updateDebouncedInputs = (val: string, param: string) => {
-    setFilters((f) => {
-      return { ...filters, [param]: val };
-    });
-  };
-
   return (
     <div className="px-12">
+      {/* Hero */}
       <div className="flex relative px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
         <h1 className="text-[52px] font-poppins uppercase font-bold">
           Discover Your Next{" "}
@@ -142,6 +159,7 @@ const Hero = ({
         </p>
       </div>
 
+      {/* Search Header */}
       <div className="m-auto z-10 items-center sticky top-0 p-4 w-full flex gap-4  bg-white rounded-lg">
         <button
           data-testid="filter-toggle"
@@ -189,6 +207,7 @@ const Hero = ({
         </form>
       </div>
 
+      {/* Restaurant listing with collapsible sidebar*/}
       <div className="flex transition-all duration-200 gap-6 relative py-6">
         {toggleSideBar && (
           <FiltersSideBar
@@ -199,19 +218,19 @@ const Hero = ({
             resetFilters={resetFilters}
           />
         )}
-
-        <div className="relative w-full">
-          {loading && (
-            <div className="fixed inset-0 bg-gray-50/50 z-10">
-              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <LoaderCircle className="animate-spin text-primary w-8 h-8" />
-              </div>
-            </div>
-          )}
-
-          <Restaurants restaurants={listedRestaurants} />
-        </div>
+        <Restaurants restaurants={listedRestaurants} />
       </div>
+
+      {/* Spinner */}
+      {loading && (
+        <div className="fixed inset-0 bg-gray-50/50 z-10">
+          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <LoaderCircle className="animate-spin text-primary w-8 h-8" />
+          </div>
+        </div>
+      )}
+
+      {/* Pagination */}
       {listedRestaurants.length > 0 ? (
         <Pagination
           currPage={currPage}

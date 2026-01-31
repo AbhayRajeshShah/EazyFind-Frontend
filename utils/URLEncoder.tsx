@@ -1,5 +1,7 @@
 import { AllFilters } from "@/types/filters";
 
+// ----------------- Helper to get search params for backend query ---------------------
+
 export const objectToQueryParams = <T extends Record<string, any>>(
   o: T,
 ): string => {
@@ -18,6 +20,8 @@ const parseArray = (arr: string[] | number[]): string => {
   return arr.join(",");
 };
 
+// ----------------- Update Next.JS Browser search params with filter ---------------
+
 export const updateUrlQuery = (newQuery = {}) => {
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
@@ -35,11 +39,11 @@ export const updateUrlQuery = (newQuery = {}) => {
     }
   });
 
-  console.log(params);
-
   const newUrl = `${url.pathname}?${params}`;
   window.history.pushState({}, "", newUrl);
 };
+
+// ---------------- Parse filters from URLSearch Params --------------------
 
 function parseFilters(params: URLSearchParams): AllFilters {
   let obj: Record<string, any> = {
@@ -48,9 +52,8 @@ function parseFilters(params: URLSearchParams): AllFilters {
     minCost: params.get("minCost") ? Number(params.get("minCost")) : undefined,
     maxCost: params.get("maxCost") ? Number(params.get("maxCost")) : undefined,
     cuisineIds: params.get("cuisineIds")
-      ? params.get("cuisineIds")!.split(",") // split by comma
+      ? params.get("cuisineIds")!.split(",")
       : undefined,
-    // Optional fields not present in URLSearchParams will be undefined
     discount: params.get("discount")
       ? Number(params.get("discount"))
       : undefined,
