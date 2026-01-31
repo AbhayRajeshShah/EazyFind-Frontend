@@ -3,7 +3,7 @@ import { Restaurant } from "@/types/restaurant";
 import { Star, Users, ExternalLink } from "lucide-react";
 
 const Restaurants = ({ restaurants }: { restaurants: Restaurant[] }) => {
-  return restaurants.length > 0 ? (
+  return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {restaurants.map((restaurant) => (
         <RestaurantCard
@@ -11,10 +11,6 @@ const Restaurants = ({ restaurants }: { restaurants: Restaurant[] }) => {
           restaurant={restaurant}
         />
       ))}
-    </div>
-  ) : (
-    <div className="flex w-full justify-center">
-      <img src={"no_results.svg"} className="h-60 object-fit" />
     </div>
   );
 };

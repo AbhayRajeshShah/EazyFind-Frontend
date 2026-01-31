@@ -218,7 +218,16 @@ const Hero = ({
             resetFilters={resetFilters}
           />
         )}
-        <Restaurants restaurants={listedRestaurants} />
+        {listedRestaurants.length > 0 ? (
+          <div className="relative w-full">
+            <Restaurants restaurants={listedRestaurants} />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6  w-full justify-center items-center">
+            <img src={"no_results.svg"} className="h-60 object-fit" />
+            <p className="font-xl font-poppins">No restaurants Found</p>
+          </div>
+        )}
       </div>
 
       {/* Spinner */}
@@ -231,16 +240,12 @@ const Hero = ({
       )}
 
       {/* Pagination */}
-      {listedRestaurants.length > 0 ? (
+      {listedRestaurants.length > 0 && (
         <Pagination
           currPage={currPage}
           setCurrPage={setCurrPage}
           totalPages={totalPages}
         />
-      ) : (
-        <p data-testid="error" className="text-center pb-6 text-lg">
-          No restaurants found
-        </p>
       )}
     </div>
   );

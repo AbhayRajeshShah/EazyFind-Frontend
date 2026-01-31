@@ -30,7 +30,10 @@ const FiltersSideBar = ({
   resetFilters: () => void;
 }) => {
   const [form] = Form.useForm();
-  const [cost, setCost] = useState([0, 10000]);
+  const [cost, setCost] = useState([
+    filters.minCost || 0,
+    filters.maxCost || 10000,
+  ]);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // --------------- Handle Change ---------------
