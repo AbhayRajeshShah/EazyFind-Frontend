@@ -159,19 +159,19 @@ const Hero = ({
   return (
     <div className="px-12">
       {/* Hero */}
-      <div className="flex relative px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
-        <h1 className="text-[52px] font-poppins uppercase font-bold">
+      <div className="flex relative px-6 md:px-12 pt-20 pb-12 m-auto text-center flex-col gap-8 items-center text-foreground justify-center flex-1">
+        <h1 className="md:text-[52px] text-[32px] font-poppins uppercase font-bold">
           Discover Your Next{" "}
           <span className="text-primary">Favorite Meal.</span>
         </h1>
-        <p className="font-inter text-[20px] text-gray-600 max-w-2xl">
+        <p className="font-inter md:text-[20px] text-gray-600 max-w-2xl">
           Find the best restaurants near you with exclusive offers and deals.
           Easy search, easy find.
         </p>
       </div>
 
       {/* Search Header */}
-      <div className="m-auto z-10 items-center sticky top-0 p-4 w-full flex gap-4  bg-white rounded-lg">
+      <div className="m-auto z-10 flex-wrap py-4 px-2 items-center sticky top-0 md:p-4 w-full flex gap-4  bg-white rounded-lg">
         <button
           data-testid="filter-toggle"
           onClick={() => setToggleSideBar(!toggleSideBar)}
@@ -212,14 +212,14 @@ const Hero = ({
               onChange={updateDebouncedInputs}
             />
           </div>
-          <button className="px-6 cursor-pointer py-4 bg-primary rounded-md text-background">
+          <button className="px-6 hidden md:relative cursor-pointer py-4 bg-primary rounded-md text-background">
             Search
           </button>
         </form>
       </div>
 
       {/* Restaurant listing with collapsible sidebar*/}
-      <div className="flex transition-all duration-200 gap-6 relative py-6">
+      <div className="md:flex transition-all duration-200 gap-6 relative py-6">
         {toggleSideBar && (
           <FiltersSideBar
             cuisines={cuisines}
@@ -234,7 +234,7 @@ const Hero = ({
             <Restaurants restaurants={listedRestaurants} />
           </div>
         ) : (
-          <div className="flex flex-col gap-6  w-full justify-center items-center">
+          <div className="flex  flex-col gap-6  w-full justify-center items-center">
             <img src={"no_results.svg"} className="h-60 object-fit" />
             <p className="font-xl font-poppins">No restaurants Found</p>
           </div>

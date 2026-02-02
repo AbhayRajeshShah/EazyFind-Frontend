@@ -35,7 +35,7 @@ const Pagination = ({
   console.log(startPage);
 
   return (
-    <div className="flex gap-2 m-auto pb-8 justify-center items-center">
+    <div className="flex flex-wrap gap-2 m-auto pb-8 justify-center items-center">
       {/* Prev window */}
       <button
         onClick={goPrevWindow}
